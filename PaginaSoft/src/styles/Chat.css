@@ -1,0 +1,158 @@
+/* Chat.css */
+
+/* Estilo general del chat */
+.chat-container {
+	display: flex;
+	flex-direction: column;
+	position: fixed; /* Fijar el chat en la posición */
+	bottom: 0;
+	right: 0; /* Posiciona a la derecha en todas las pantallas */
+	left: auto; /* Asegura que no se extienda hacia la izquierda */
+	height: 0; /* Oculto por defecto en móviles */
+	width: 100%;
+	max-width: 350px; /* Ancho máximo en pantallas grandes */
+	background-color: #212529;
+	border-left: 1px solid #343a40;
+	z-index: 1000;
+	padding: 10px;
+	overflow: hidden; /* Ocultar contenido cuando está cerrado */
+	transition: height 0.3s ease-in-out, transform 0.3s ease-in-out; /* Añadir transición para el transform */
+}
+
+/* Mostrar el chat cuando está abierto */
+.chat-container.open {
+	height: 50vh; /* Altura del chat cuando está abierto en móviles */
+}
+
+/* Para pantallas grandes */
+@media (min-width: 769px) {
+	.chat-container {
+		height: calc(100vh - 50px); /* Altura completa menos el navbar */
+		top: 65px; /* Debajo del navbar */
+		right: 0; /* Asegura que se quede a la derecha */
+		left: auto; /* Elimina el left: 0 del estilo general */
+		width: 350px; /* Ancho fijo en escritorio */
+		overflow: auto; /* Permite scroll en escritorio */
+		border-top: none; /* Sin borde superior en escritorio */
+		transform: translateX(
+			100%
+		); /* Mueve el chat fuera de la pantalla por defecto en escritorio */
+	}
+	.chat-container.open {
+		height: calc(
+			100vh - 50px
+		); /* Mantiene el chat abierto por defecto en escritorio */
+		transform: translateX(
+			0
+		); /* Muestra el chat cuando está abierto en escritorio */
+	}
+}
+
+/* Para dispositivos móviles */
+@media (max-width: 768px) {
+	.chat-container {
+		transform: translateX(
+			100%
+		); /* Mueve el chat fuera de la pantalla por defecto en móviles */
+	}
+	.chat-container.open {
+		transform: translateX(
+			0
+		); /* Muestra el chat cuando está abierto en móviles */
+		height: 50vh; /* Altura del chat cuando está abierto en móviles */
+	}
+}
+
+/* Estilo del botón de despliegue en móviles */
+.chat-toggle-button {
+	display: none; /* Oculto por defecto */
+	position: fixed;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	padding: 10px 20px;
+	background-color: #343a40;
+	color: #ffffff;
+	border: none;
+	border-radius: 20px 20px 0 0;
+	cursor: pointer;
+	z-index: 1005;
+}
+
+@media (max-width: 768px) {
+	.chat-toggle-button {
+		display: block; /* Mostrar solo en móviles */
+	}
+}
+
+/* Estilo del botón de despliegue en escritorio */
+.chat-toggle-button-desktop {
+	display: none; /* Oculto por defecto */
+	position: fixed;
+	top: 65px; /* Justo debajo del navbar */
+	right: 0px; /* Alineado a la derecha */
+	padding: 10px 20px;
+	background-color: #343a40;
+	color: #ffffff;
+	border: none;
+	border-radius: 0 0 0 20px;
+	cursor: pointer;
+	z-index: 1005;
+}
+
+@media (min-width: 769px) {
+	.chat-toggle-button-desktop {
+		display: block; /* Mostrar en escritorio */
+	}
+}
+
+.chat-messages {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	overflow-y: auto; /* Para hacer scroll en mensajes largos */
+	background-color: #1b1e21; /* Fondo oscuro para el área de mensajes */
+	border-radius: 10px;
+}
+
+.chat-input {
+	display: flex;
+	padding: 10px;
+	border-top: 1px solid #343a40;
+	background-color: #1b1e21;
+	border-radius: 10px;
+}
+
+.chat-input input {
+	flex: 1;
+	padding: 10px;
+	border: 1px solid #495057;
+	border-radius: 10px;
+	background-color: #343a40;
+	color: #ffffff;
+	margin-right: 10px;
+}
+
+.chat-input button {
+	padding: 10px 20px;
+	border: none;
+	border-radius: 10px;
+	background-color: #0d6efd; /* Botón de envío en azul */
+	color: white;
+	cursor: pointer;
+}
+
+/* Estilo para mostrar nuevos mensajes */
+.chat-messages .new-message {
+	animation: fadeIn 0.5s; /* Animación para nuevos mensajes */
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}

@@ -1,0 +1,22 @@
+.d-flex.flex-column.flex-shrink-0.p-3.text-bg-dark {
+	width: 280px;
+	height: 100vh;
+	position: fixed;
+	left: -280px;
+	top: 0;
+	transition: left 0.3s ease-in-out;
+}
+
+.d-flex.flex-column.flex-shrink-0.p-3.text-bg-dark:hover {
+	left: 0;
+}
+
+.d-flex.flex-column.flex-shrink-0.p-3.text-bg-dark::before {
+	content: "";
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 10px;
+	height: 100vh;
+	z-index: 999;
+}

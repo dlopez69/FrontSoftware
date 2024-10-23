@@ -1,0 +1,28 @@
+/* Msg.css */
+.msg-container {
+	max-width: 70%;
+	margin: 5px 10px;
+	padding: 10px 15px;
+	border-radius: 15px;
+	font-size: 14px;
+	display: flex;
+	flex-direction: column;
+}
+
+/* Mensajes enviados */
+.msg-container.sent {
+	background-color: #0d6efd; /* Color azul para mensajes enviados */
+	color: #fff;
+	align-self: flex-end; /* Alineación a la derecha */
+	text-align: right;
+	margin-right: 20px;
+}
+
+/* Mensajes recibidos */
+.msg-container.received {
+	background-color: #343a40; /* Color gris oscuro para mensajes recibidos */
+	color: #fff;
+	align-self: flex-start; /* Alineación a la izquierda */
+	text-align: left;
+	margin-left: 20px;
+}

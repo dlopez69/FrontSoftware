@@ -1,0 +1,43 @@
+body {
+	background-color: #5c5d5f;
+}
+
+/* En tu archivo CSS */
+.microfono-icon {
+	margin-right: 5px; /* Espacio entre el icono y el texto */
+	width: 20px; /* Ajusta el tamaño según lo necesites */
+	height: 20px; /* Ajusta el tamaño según lo necesites */
+}
+
+/* Estilos generales */
+header {
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+/* Estilos para model-viewer */
+model-viewer {
+	position: fixed; /* Posición fija para ocupar toda la pantalla */
+	top: 0; /* Ajusta la parte superior */
+	left: 0; /* Ajusta la parte izquierda */
+	width: 100%; /* Ocupar todo el ancho */
+	height: 100%; /* Ocupar toda la altura */
+	background-color: #1e1e1e; /* Color de fondo */
+	z-index: -1; /* Asegúrate de que esté detrás de otros elementos */
+	border-radius: 0; /* Sin bordes redondeados */
+	box-shadow: none; /* Sin sombra para el fondo */
+}
+
+/* Estilo para otros elementos que se superpondrán al model-viewer */
+.container {
+	position: relative; /* Posición relativa para otros elementos */
+	z-index: 1; /* Asegúrate de que se muestre encima del model-viewer */
+}
+
+/* Media query para pantallas más pequeñas */
+@media (max-width: 768px) {
+	model-viewer {
+		/* Si deseas que cambie en pantallas más pequeñas, puedes ajustar aquí */
+		height: auto; /* Permitir que el alto sea automático */
+	}
+}
