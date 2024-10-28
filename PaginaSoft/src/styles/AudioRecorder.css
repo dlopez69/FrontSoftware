@@ -1,0 +1,28 @@
+/* src/components/AudioRecorder.css */
+.audio-recorder-container {
+	display: flex; /* Utiliza flexbox para alinear los elementos */
+	flex-direction: column; /* Coloca los elementos en una columna */
+	align-items: center; /* Centra los elementos horizontalmente */
+	justify-content: center; /* Centra los elementos verticalmente dentro de su contenedor */
+	position: fixed; /* Posición fija para que se mantenga en la parte inferior */
+	bottom: 20px; /* Espacio desde el fondo de la pantalla */
+	left: 50%; /* Posiciona el contenedor al centro horizontalmente */
+	transform: translateX(-50%); /* Ajusta la posición para que esté centrado */
+	background-color: rgba(30, 30, 30, 0.8); /* Fondo semi-transparente */
+	border-radius: 10px; /* Bordes redondeados */
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Sombra para dar profundidad */
+	padding: 20px; /* Espaciado interno */
+	z-index: 1000; /* Asegura que esté por encima de otros elementos */
+}
+
+.microfono-icon {
+	width: 50px; /* Tamaño del icono */
+	height: 50px; /* Tamaño del icono */
+	margin-right: 10px; /* Espacio entre el icono y el texto */
+}
+
+.alert {
+	margin-top: 10px; /* Espacio entre el botón y la alerta */
+	color: #ffcc00; /* Color de la alerta */
+	font-weight: bold; /* Negrita */
+}
