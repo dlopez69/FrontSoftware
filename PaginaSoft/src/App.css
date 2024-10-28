@@ -1,5 +1,5 @@
 body {
-	background-color: #5c5d5f;
+	background-color: #666666;
 }
 
 /* En tu archivo CSS */
@@ -22,7 +22,7 @@ model-viewer {
 	left: 0; /* Ajusta la parte izquierda */
 	width: 100%; /* Ocupar todo el ancho */
 	height: 100%; /* Ocupar toda la altura */
-	background-color: #1e1e1e; /* Color de fondo */
+	background-color: #212529; /* Color de fondo */
 	z-index: -1; /* Asegúrate de que esté detrás de otros elementos */
 	border-radius: 0; /* Sin bordes redondeados */
 	box-shadow: none; /* Sin sombra para el fondo */

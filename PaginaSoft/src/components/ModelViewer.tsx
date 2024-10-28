@@ -31,7 +31,7 @@ function FishModelViewer() {
 			ktx2-transcoder-location="https://www.gstatic.com/draco/v1/decoders/"
 			alt="A 3D model of a catwife"
 			shadow-intensity="1"
-			auto-rotate
+			// auto-rotate
 			exposure="1"
 			tone-mapping="neutral"
 			rotation="0 180 0"

@@ -61,3 +61,7 @@ input.form-control-dark {
 input.form-control-dark::placeholder {
 	color: #ced4da;
 }
+
+.navbar-nav-container {
+	border-bottom: 1px solid #343a40;
+}

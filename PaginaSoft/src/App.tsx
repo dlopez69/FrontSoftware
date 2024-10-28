@@ -7,11 +7,13 @@ import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Chat from "./components/Chat";
 import AudioRecorder from "./components/AudioRecorder";
+import Loading from "./components/Loading";
 import "./styles/Chat.css";
 import "./App.css";
 
-// Definición del tipo de mensaje
+// Actualiza la definición del tipo de mensaje
 interface Message {
+	id: number;
 	message: string;
 	type: "sent" | "received";
 }
@@ -21,8 +23,8 @@ const App = () => {
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 	const [messages, setMessages] = useState<Message[]>([
-		{ message: "Hola", type: "sent" },
-		{ message: "¿Cómo estás?", type: "received" },
+		{ id: 1, message: "Hola", type: "sent" },
+		{ id: 2, message: "¿Cómo estás?", type: "received" },
 	]);
 
 	// Función para enviar audio al servidor
@@ -50,7 +52,10 @@ const App = () => {
 
 	// Función para añadir un nuevo mensaje al chat
 	const addMessage = (message: string, type: "sent" | "received") => {
-		setMessages((prevMessages) => [...prevMessages, { message, type }]);
+		setMessages((prevMessages) => [
+			...prevMessages,
+			{ id: prevMessages.length + 1, message, type },
+		]);
 	};
 
 	// Manejar el audio grabado y enviarlo al servidor
@@ -77,27 +82,45 @@ const App = () => {
 		};
 	}, []);
 
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		const timeout = setTimeout(() => setIsLoading(false), 2000);
+		return () => clearTimeout(timeout);
+	}, []);
+
 	return (
 		<>
-			<Navbar />
-			{mostrarSidebar && <Sidebar handleHover={handleHover} />}
-			<header>
-				<FishModelViewer />
-			</header>
 			<div>
-				<AudioRecorder onAudioRecorded={handleAudioRecorded} />
+				{isLoading ? (
+					<Loading size={80} />
+				) : (
+					<>
+						<Navbar />
+						{mostrarSidebar && <Sidebar handleHover={handleHover} />}
+						<header>
+							<FishModelViewer />
+						</header>
+						<div>
+							<AudioRecorder onAudioRecorded={handleAudioRecorded} />
+						</div>
+						{isMobile && (
+							<button className="chat-toggle-button" onClick={toggleChat}>
+								{isChatOpen ? "▼" : "▲"}
+							</button>
+						)}
+						{!isMobile && (
+							<button
+								className="chat-toggle-button-desktop"
+								onClick={toggleChat}
+							>
+								{isChatOpen ? "Cerrar Chat" : "Abrir Chat"}
+							</button>
+						)}
+						<Chat isOpen={isChatOpen} messages={messages} />
+					</>
+				)}
 			</div>
-			{isMobile && (
-				<button className="chat-toggle-button" onClick={toggleChat}>
-					{isChatOpen ? "▼" : "▲"}
-				</button>
-			)}
-			{!isMobile && (
-				<button className="chat-toggle-button-desktop" onClick={toggleChat}>
-					{isChatOpen ? "Cerrar Chat" : "Abrir Chat"}
-				</button>
-			)}
-			<Chat isOpen={isChatOpen} messages={messages} />
 		</>
 	);
 };

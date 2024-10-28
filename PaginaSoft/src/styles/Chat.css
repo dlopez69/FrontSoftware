@@ -13,6 +13,7 @@
 	max-width: 350px; /* Ancho máximo en pantallas grandes */
 	background-color: #212529;
 	border-left: 1px solid #343a40;
+	border-top: 1px solid #343a40;
 	z-index: 1000;
 	padding: 10px;
 	overflow: hidden; /* Ocultar contenido cuando está cerrado */
@@ -28,7 +29,7 @@
 @media (min-width: 769px) {
 	.chat-container {
 		height: calc(100vh - 50px); /* Altura completa menos el navbar */
-		top: 65px; /* Debajo del navbar */
+		top: 67px; /* Debajo del navbar */
 		right: 0; /* Asegura que se quede a la derecha */
 		left: auto; /* Elimina el left: 0 del estilo general */
 		width: 350px; /* Ancho fijo en escritorio */
@@ -89,7 +90,7 @@
 .chat-toggle-button-desktop {
 	display: none; /* Oculto por defecto */
 	position: fixed;
-	top: 65px; /* Justo debajo del navbar */
+	top: 67px; /* Justo debajo del navbar */
 	right: 0px; /* Alineado a la derecha */
 	padding: 10px 20px;
 	background-color: #343a40;
@@ -106,14 +107,16 @@
 	}
 }
 
+/* Contenedor de mensajes */
 .chat-messages {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
-	padding: 10px;
-	overflow-y: auto; /* Para hacer scroll en mensajes largos */
-	background-color: #1b1e21; /* Fondo oscuro para el área de mensajes */
+	padding: 15px;
+	overflow-y: auto;
+	background-color: #1b1e21;
 	border-radius: 10px;
+	gap: 5px; /* Espacio entre mensajes */
 }
 
 .chat-input {
