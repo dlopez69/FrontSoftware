@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "../styles/AudioRecorder.css";
+
 const AudioRecorder: React.FC<{ onTextRecorded: (text: string) => void }> = ({
 	onTextRecorded,
 }) => {
@@ -13,23 +14,41 @@ const AudioRecorder: React.FC<{ onTextRecorded: (text: string) => void }> = ({
 		return null;
 	}
 
-	recognition.lang = "es-MX"; // Cambiado a español de México
+	recognition.lang = "es-MX";
 	recognition.continuous = false;
-	recognition.interimResults = false; // Solo resultados finales
+	recognition.interimResults = false;
 
 	recognition.onresult = (event: any) => {
 		const transcript = event.results[0][0].transcript;
 		console.log("Texto detectado:", transcript);
 		onTextRecorded(transcript);
-		setRecording(false); // Asegurarse de que la grabación se detenga
+		setRecording(false);
 	};
 
 	recognition.onerror = (event: any) => {
 		console.error("Error de reconocimiento:", event.error);
+		if (event.error === "aborted") {
+			console.log("La grabación fue abortada.");
+		} else if (event.error === "no-speech") {
+			console.log("No se detectó discurso.");
+		}
 		setRecording(false);
 	};
 
+	recognition.onend = () => {
+		console.log("Reconocimiento finalizado.");
+		setRecording(false);
+		setTimeout(() => {
+			if (recording) {
+				recognition.start(); // Reiniciar si se estaba grabando
+			}
+		}, 1000); // Espera 1 segundo antes de reiniciar
+	};
+
 	const startRecording = () => {
+		if (recording) return; // No iniciar si ya está grabando
+
+		console.log("Iniciando grabación...");
 		try {
 			setRecording(true);
 			recognition.start();
@@ -37,11 +56,6 @@ const AudioRecorder: React.FC<{ onTextRecorded: (text: string) => void }> = ({
 			console.error("Error al iniciar la grabación:", error);
 			setRecording(false);
 		}
-	};
-
-	const stopRecording = () => {
-		setRecording(false);
-		recognition.stop();
 	};
 
 	return (
