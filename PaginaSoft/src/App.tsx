@@ -1,8 +1,5 @@
-// src/App.tsx
 import { useState, useEffect } from "react";
 import FishModelViewer from "./components/ModelViewer";
-import Button from "./components/Button";
-import Alert from "./components/Alert";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Chat from "./components/Chat";
@@ -11,79 +8,90 @@ import Loading from "./components/Loading";
 import "./styles/Chat.css";
 import "./App.css";
 
-// Actualiza la definición del tipo de mensaje
 interface Message {
 	id: number;
 	message: string;
 	type: "sent" | "received";
+	fromVoice: boolean; // Nuevo campo para identificar si proviene de voz
 }
 
 const App = () => {
 	const [mostrarSidebar, setMostrarSidebar] = useState(true);
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-	const [messages, setMessages] = useState<Message[]>([
-		{ id: 1, message: "Hola", type: "sent" },
-		{ id: 2, message: "¿Cómo estás?", type: "received" },
-	]);
+	const [messages, setMessages] = useState<Message[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
 
-	// Función para enviar audio al servidor
-	const sendAudioToServer = async (audioBlob: Blob) => {
-		const formData = new FormData();
-		formData.append("audio", audioBlob, "audio.wav");
-
-		try {
-			const response = await fetch("http://localhost:5000/procesar_audio", {
-				method: "POST",
-				body: formData,
-			});
-
-			if (!response.ok) {
-				throw new Error("Error en la respuesta del servidor");
-			}
-
-			const data = await response.json();
-			addMessage(data.transcripcion, "sent"); // Añade el mensaje recibido al chat
-		} catch (error) {
-			console.error("Error al conectar con el servidor:", error);
-			addMessage("Error al procesar el audio", "received");
-		}
-	};
-
-	// Función para añadir un nuevo mensaje al chat
-	const addMessage = (message: string, type: "sent" | "received") => {
-		setMessages((prevMessages) => [
-			...prevMessages,
-			{ id: prevMessages.length + 1, message, type },
+	// Agregar mensajes al chat
+	const addMessage = (
+		message: string,
+		type: "sent" | "received",
+		fromVoice: boolean = false
+	) => {
+		setMessages((prev) => [
+			...prev,
+			{ id: prev.length + 1, message, type, fromVoice },
 		]);
 	};
 
-	// Manejar el audio grabado y enviarlo al servidor
-	const handleAudioRecorded = (audioBlob: Blob) => {
-		sendAudioToServer(audioBlob); // Enviar el audio al servidor
+	// Manejo de envío de mensaje
+	const handleSendMessage = async (
+		message: string,
+		fromVoice: boolean = false
+	) => {
+		if (!message.trim()) return;
+
+		// Agregamos el mensaje del usuario al chat
+		addMessage(message, "sent", fromVoice);
+
+		try {
+			const response = await fetch(
+				"https://chatbot-uabc-api-production.up.railway.app/api/chatbot/openai-chat/",
+				{
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						client_id: Math.random().toString(36).substr(2, 9),
+						message: message,
+					}),
+				}
+			);
+
+			if (!response.ok) throw new Error("Error al obtener la respuesta");
+
+			const data = await response.json();
+			const botResponse = data.response;
+
+			// Agregar la respuesta del bot al chat
+			addMessage(botResponse, "received", fromVoice);
+
+			// Solo reproducir la respuesta del bot si proviene de un mensaje hablado
+			if (fromVoice) speakText(botResponse);
+		} catch (error) {
+			console.error("Error:", error);
+			addMessage("Error al conectar con el chatbot.", "received");
+		}
 	};
 
-	const handleHover = () => {
-		setMostrarSidebar(true);
+	// Función para reproducir texto usando TTS
+	const speakText = (text: string) => {
+		const utterance = new SpeechSynthesisUtterance(text);
+		utterance.lang = "es-MX";
+		utterance.rate = 1.5;
+		utterance.pitch = 1.5;
+		utterance.volume = 1;
+		window.speechSynthesis.cancel();
+		window.speechSynthesis.speak(utterance);
 	};
 
-	const toggleChat = () => {
-		setIsChatOpen(!isChatOpen);
-	};
-
+	// Detectar cambio de tamaño de pantalla
 	useEffect(() => {
-		const handleResize = () => {
-			setIsMobile(window.innerWidth <= 768);
-		};
+		const handleResize = () => setIsMobile(window.innerWidth <= 768);
 		window.addEventListener("resize", handleResize);
-
-		return () => {
-			window.removeEventListener("resize", handleResize);
-		};
+		return () => window.removeEventListener("resize", handleResize);
 	}, []);
 
-	const [isLoading, setIsLoading] = useState(true);
-
+	// Simular carga inicial
 	useEffect(() => {
 		const timeout = setTimeout(() => setIsLoading(false), 2000);
 		return () => clearTimeout(timeout);
@@ -91,36 +99,48 @@ const App = () => {
 
 	return (
 		<>
-			<div>
-				{isLoading ? (
-					<Loading size={80} />
-				) : (
-					<>
-						<Navbar />
-						{mostrarSidebar && <Sidebar handleHover={handleHover} />}
-						<header>
-							<FishModelViewer />
-						</header>
-						<div>
-							<AudioRecorder onAudioRecorded={handleAudioRecorded} />
-						</div>
-						{isMobile && (
-							<button className="chat-toggle-button" onClick={toggleChat}>
-								{isChatOpen ? "▼" : "▲"}
-							</button>
-						)}
-						{!isMobile && (
-							<button
-								className="chat-toggle-button-desktop"
-								onClick={toggleChat}
-							>
-								{isChatOpen ? "Cerrar Chat" : "Abrir Chat"}
-							</button>
-						)}
-						<Chat isOpen={isChatOpen} messages={messages} />
-					</>
-				)}
-			</div>
+			{isLoading ? (
+				<Loading size={80} />
+			) : (
+				<>
+					<Navbar />
+					{mostrarSidebar && (
+						<Sidebar handleHover={() => setMostrarSidebar(true)} />
+					)}
+					<header>
+						<FishModelViewer />
+					</header>
+
+					<div>
+						{/* Componente de grabación de voz */}
+						<AudioRecorder
+							onTextRecorded={(text) => handleSendMessage(text, true)}
+						/>
+					</div>
+
+					{isMobile ? (
+						<button
+							className="chat-toggle-button"
+							onClick={() => setIsChatOpen(!isChatOpen)}
+						>
+							{isChatOpen ? "▼" : "▲"}
+						</button>
+					) : (
+						<button
+							className="chat-toggle-button-desktop"
+							onClick={() => setIsChatOpen(!isChatOpen)}
+						>
+							{isChatOpen ? "Cerrar Chat" : "Abrir Chat"}
+						</button>
+					)}
+
+					<Chat
+						isOpen={isChatOpen}
+						messages={messages}
+						onSendMessage={(message) => handleSendMessage(message, false)}
+					/>
+				</>
+			)}
 		</>
 	);
 };

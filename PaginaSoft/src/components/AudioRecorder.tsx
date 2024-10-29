@@ -1,45 +1,52 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import "../styles/AudioRecorder.css";
-
-interface AudioRecorderProps {
-	onAudioRecorded: (audioBlob: Blob) => void;
-}
-
-const AudioRecorder: React.FC<AudioRecorderProps> = ({ onAudioRecorded }) => {
+const AudioRecorder: React.FC<{ onTextRecorded: (text: string) => void }> = ({
+	onTextRecorded,
+}) => {
 	const [recording, setRecording] = useState(false);
-	const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-	const audioChunks = useRef<Blob[]>([]);
+	let recognition: any;
 
-	const startRecording = async () => {
-		const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-		mediaRecorderRef.current = new MediaRecorder(stream);
-		mediaRecorderRef.current.ondataavailable = (event) => {
-			audioChunks.current.push(event.data);
-		};
+	if ("webkitSpeechRecognition" in window) {
+		recognition = new (window as any).webkitSpeechRecognition();
+	} else {
+		console.error("Reconocimiento de voz no soportado en este navegador.");
+		return null;
+	}
 
-		mediaRecorderRef.current.onstop = () => {
-			const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
-			onAudioRecorded(audioBlob);
-			audioChunks.current = []; // Limpia los chunks después de enviar
-		};
+	recognition.lang = "es-MX"; // Cambiado a español de México
+	recognition.continuous = false;
+	recognition.interimResults = false; // Solo resultados finales
 
-		mediaRecorderRef.current.start();
-		setRecording(true);
+	recognition.onresult = (event: any) => {
+		const transcript = event.results[0][0].transcript;
+		console.log("Texto detectado:", transcript);
+		onTextRecorded(transcript);
+		setRecording(false); // Asegurarse de que la grabación se detenga
 	};
 
-	const stopRecording = () => {
-		if (mediaRecorderRef.current) {
-			mediaRecorderRef.current.stop();
+	recognition.onerror = (event: any) => {
+		console.error("Error de reconocimiento:", event.error);
+		setRecording(false);
+	};
+
+	const startRecording = () => {
+		try {
+			setRecording(true);
+			recognition.start();
+		} catch (error) {
+			console.error("Error al iniciar la grabación:", error);
 			setRecording(false);
 		}
 	};
 
+	const stopRecording = () => {
+		setRecording(false);
+		recognition.stop();
+	};
+
 	return (
 		<div className="audio-recorder-container">
-			<button
-				className="btn btn-dark"
-				onClick={recording ? stopRecording : startRecording}
-			>
+			<button className="btn btn-dark" onClick={startRecording}>
 				{recording ? "Detener grabación" : "Iniciar grabación"}
 			</button>
 		</div>
